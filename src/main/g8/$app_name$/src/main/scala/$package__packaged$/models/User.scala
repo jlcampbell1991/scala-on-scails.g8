@@ -74,7 +74,7 @@ object User extends Model {
 
   def update[F[_]: Sync](user: User): Update0 =
     sql"""
-      update user set
+      update $app_name;format="snake"$_user set
         name = \${user.name},
         password = \${user.password}
       where id = \${user.id}
@@ -82,7 +82,7 @@ object User extends Model {
       .update
 
   def destroy[F[_]: Sync](user: User): Update0 =
-    sql"""delete from user where id = \${user.id}"""
+    sql"""delete from $app_name;format="snake"$_user where id = \${user.id}"""
     .update
 
   def add = views.html.user.signup()

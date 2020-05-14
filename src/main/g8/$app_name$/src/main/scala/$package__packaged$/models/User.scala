@@ -52,11 +52,11 @@ object User extends Model {
     User("",Password(""), UserId.random)
 
   def find[F[_]: Sync](id: UserId)(implicit XA: Transactor[F]): F[User] =
-    sql"""select * from test_snap_user where id = ${id.toString}"""
+    sql"""select * from test_snap_user where id = \${id.toString}"""
       .query[User].unique.transact(XA)
 
   def find[F[_]: Sync](name: String)(implicit XA: Transactor[F]): F[User] =
-    sql"""select * from test_snap_user where name = test-snap"""
+    sql"""select * from test_snap_user where name = \${name}"""
       .query[User].unique.transact(XA)
 
   def create[F[_]: Sync](user: User)(implicit XA: Transactor[F]): F[User] = {
@@ -64,9 +64,9 @@ object User extends Model {
     insert into test_snap_user (name, password, id)
     values
     (
-      ${user.name},
-      ${user.password},
-      ${user.id}
+      \${user.name},
+      \${user.password},
+      \${user.id}
     )
     """
     .update.withUniqueGeneratedKeys[User]("name", "password", "id").transact(XA)
@@ -75,14 +75,14 @@ object User extends Model {
   def update[F[_]: Sync](user: User): Update0 =
     sql"""
       update user set
-        name = ${user.name},
-        password = ${user.password}
-      where id = ${user.id}
+        name = \${user.name},
+        password = \${user.password}
+      where id = \${user.id}
       """
       .update
 
   def destroy[F[_]: Sync](user: User): Update0 =
-    sql"""delete from user where id = ${user.id}"""
+    sql"""delete from user where id = \${user.id}"""
     .update
 
   def add = views.html.user.signup()

@@ -10,9 +10,9 @@ object DBDriver {
 
   val development = Transactor.fromDriverManager[IO](
     "org.postgresql.Driver",
-    s"jdbc:postgresql:${Config.dbName}",
-    s"${Config.username}",
-    s"${Config.password}")
+    s"jdbc:postgresql:\${Config.dbName}",
+    s"\${Config.username}",
+    s"\${Config.password}")
 
   val production = Transactor.fromDriverManager[IO](
     "org.postgresql.Driver",

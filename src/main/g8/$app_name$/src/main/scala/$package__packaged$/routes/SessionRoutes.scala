@@ -7,13 +7,13 @@ import org.http4s._
 import org.http4s.twirl._
 import doobie._
 
-object SessionController extends Controller {
+object SessionRoutes extends Routes {
   def routes[F[_]: Sync : Transactor]: HttpRoutes[F] = {
     implicit val dsl = new Http4sDsl[F]{}
     import dsl._
 
     HttpRoutes.of {
-      case GET -> Root / "login" => Ok(views.html.session.login().pure[F])
+      case GET -> Root / "login" => Ok(Session.login.pure[F])
       case params @ POST -> Root / "login" =>
         for {
           fUser <- params.as[UrlForm]

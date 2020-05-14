@@ -1,12 +1,13 @@
-val circeV = "$circe_version$" // "0.11.1"
-val http4sV = "$http4s_version$" // "0.21.1"
-val doobieV = "$doobie_version$" // "0.8.4"
-val scalaBcryptV = "$scala_bcrypt_version$" // "4.1"
-val specs2V = "$specs2_version$" // "3.8.9"
+val circeV = "$circe_version$"
+val http4sV = "$http4s_version$"
+val doobieV = "$doobie_version$"
+val scalaBcryptV = "$scala_bcrypt_version$"
+val specs2V = "$specs2_version$"
 
 lazy val `$app_name$` =
   project
     .in(file("$app_name$"))
+    .enablePlugins(SbtTwirl)
     .settings(
       name := "$app_name$",
       libraryDependencies ++= Seq(
@@ -22,7 +23,8 @@ lazy val `$app_name$` =
         "org.http4s"            %% "http4s-dsl"               % http4sV,
         "org.http4s"            %% "http4s-twirl"             % http4sV,
         "com.github.t3hnar"     %% "scala-bcrypt"             % scalaBcryptV,
-        "org.reactormonk"       %% "cryptobits"               % "1.2",
+        "org.reactormonk"       %% "cryptobits"               % "1.3",
+        "com.typesafe"           % "config"                   % "1.4.0",
         "org.scalacheck"        %% "scalacheck"               % "1.14.3" % Test,
         "org.scalatest"         %% "scalatest"                % "3.0.8" % Test
       ),

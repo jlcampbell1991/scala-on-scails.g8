@@ -10,7 +10,7 @@ trait Table {
 }
 
 object DB {
-  def tables: List[Table] = List()
+  def tables: List[Table] = List(UserTable)
   def initialize(T: Transactor[IO]) = tables.map(_.initialize.run.transact(T))
   def update(T: Transactor[IO]) = tables.map(_.update.run.transact(T))
 }

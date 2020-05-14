@@ -7,7 +7,7 @@ import org.http4s._
 import org.http4s.twirl._
 import doobie._
 
-object UserController extends Controller {
+object UserRoutes extends Routes {
   def routes[F[_]: Sync : Transactor]: HttpRoutes[F] = {
     implicit val dsl = new Http4sDsl[F]{}
     import dsl._

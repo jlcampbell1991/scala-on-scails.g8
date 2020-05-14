@@ -12,8 +12,10 @@ import org.http4s.Uri._
 import doobie._
 
 trait Routes {
-  def Redirect(uri: String): F[Response[F]] =
+  def Redirect[F[_]: Sync](uri: String)(implicit dsl: Http4sDsl[F]) = {
+    import dsl._
     SeeOther(Location(Uri(authority = Some(Authority(host = RegName(uri))))))
+  }
 
   def ifAuthed[F[_]: Sync: Http4sDsl](maybeId: Option[UserId])(f: UserId => F[Response[F]]): F[Response[F]] = {
     maybeId match {
@@ -24,7 +26,8 @@ trait Routes {
 }
 
 object Routes {
-  def routes[F[_]: Sync : Transactor](M: AuthMiddleware[F, Option[UserId]]): HttpRoutes[F] = {
+  def routes[F[_]: Sync: Transactor](M: AuthMiddleware[F, Option[UserId]], AssetsRoutes: HttpRoutes[F]): HttpRoutes[F] = {
+    AssetsRoutes <+>
     UserRoutes.routes[F] <+>
     SessionRoutes.routes[F]
   }

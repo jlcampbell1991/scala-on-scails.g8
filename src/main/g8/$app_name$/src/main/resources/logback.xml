@@ -5,7 +5,7 @@
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
             <customFields>
                 {
-                "app_name": "$app_name;format="normalize"$",
+                "app_name": "$app_name;format="normalize"$"
                 }
             </customFields>
         </encoder>

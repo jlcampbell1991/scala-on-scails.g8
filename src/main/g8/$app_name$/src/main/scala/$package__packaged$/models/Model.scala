@@ -9,9 +9,8 @@ trait Model {
   implicit val uuidPut: Put[UUID] = Put[String].contramap(_.toString)
 }
 
-case class Date(get: LocalDate) {
-  override def toString: String = s"$${get.getMonthValue}/$${get.getDayOfMonth}"
-}
+case class Date(get: LocalDate)
+
 object Date {
   def apply(month: Int, day: Int, year: Int) = LocalDate.of(year, Month.of(month), day)
   def now: Date = Date(LocalDate.now)

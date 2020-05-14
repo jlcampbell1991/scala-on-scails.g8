@@ -6,7 +6,6 @@
             <customFields>
                 {
                 "app_name": "$app_name;format="normalize"$",
-                "team":"dreamwork"
                 }
             </customFields>
         </encoder>

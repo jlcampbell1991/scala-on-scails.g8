@@ -4,7 +4,7 @@
 lazy val root = project.in(file("."))
   .enablePlugins(ScriptedPlugin)
   .settings(
-    name := "dreamwork-g8",
+    name := "scala-on-scails-g8",
     test in Test := {
       val _ = (g8Test in Test).toTask("").value
     },

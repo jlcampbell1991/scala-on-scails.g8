@@ -52,16 +52,16 @@ object User extends Model {
     User("",Password(""), UserId.random)
 
   def find[F[_]: Sync](id: UserId)(implicit XA: Transactor[F]): F[User] =
-    sql"""select * from test_snap_user where id = \${id.toString}"""
+    sql"""select * from $app_name;format="snake"$_user where id = \${id.toString}"""
       .query[User].unique.transact(XA)
 
   def find[F[_]: Sync](name: String)(implicit XA: Transactor[F]): F[User] =
-    sql"""select * from test_snap_user where name = \${name}"""
+    sql"""select * from $app_name;format="snake"$_user where name = \${name}"""
       .query[User].unique.transact(XA)
 
   def create[F[_]: Sync](user: User)(implicit XA: Transactor[F]): F[User] = {
     sql"""
-    insert into test_snap_user (name, password, id)
+    insert into $app_name;format="snake"$_user (name, password, id)
     values
     (
       \${user.name},

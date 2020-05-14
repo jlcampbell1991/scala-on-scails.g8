@@ -9,7 +9,6 @@ lazy val `$app_name$` =
     .in(file("$app_name$"))
     .settings(
       name := "$app_name$",
-      bannoDockerBaseImage := "docker.artifactory.banno-tools.com/java:11",
       libraryDependencies ++= Seq(
         "io.circe"              %% "circe-generic"            % circeV,
         "io.circe"              %% "circe-parser"             % circeV,
@@ -41,7 +40,6 @@ lazy val root = project
         scalafmtOnCompile := true,
         addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1")
       )),
-    bannoReleaseGitPushOnlyTag := true
   )
   .aggregate(
     `$app_name$`

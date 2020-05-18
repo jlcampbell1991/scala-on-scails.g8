@@ -2,6 +2,7 @@ package $package$
 
 import cats.implicits._
 import cats.effect.Sync
+import org.http4s._
 import org.http4s.UrlForm
 import doobie._
 import doobie.implicits._
@@ -26,64 +27,64 @@ final case class User(name: String, unencPass: Password, userId: UserId) {
   def password: String = unencPass.get
   def isEmpty: Boolean = name == "" && password == ""
 
-  def save[F[_]: Sync : Transactor] =
-    if(this.isEmpty) this.pure[F]
+  def save[F[_]: Sync: Transactor] =
+    if (this.isEmpty) this.pure[F]
     else User.create[F](this)
 
-  def update[F[_]: Sync : Transactor] =
+  def update[F[_]: Sync: Transactor] =
     User.update[F](this)
 
-  def destroy[F[_]: Sync : Transactor] =
+  def destroy[F[_]: Sync: Transactor] =
     User.destroy[F](this)
 }
 object User extends Model {
-  def apply[F[_]: Sync : Transactor](form: UrlForm): Option[F[User]] = {
-    for {
-      name <- form.get("name")
-      password <- form.get("password")
-      passwordConfirm <- form.get("passwordConfirmation")
-    } yield {
-      if(password == passwordConfirm) User(name, Password.encrypt(password), UserId.random)
-      else User.empty
-    }
-  }.headOption.map(_.save[F])
+  private def confirmPasswordFromForm[F[_]: Sync](form: UrlForm): F[String] =
+    form
+      .getFirst("passwordConfirmation")
+      .flatMap(pwc => form.getFirst("password").filter(_ == pwc))
+      .fold(Sync[F].raiseError[String](MalformedMessageBodyFailure("Password and confirmation don't match")))(
+        Sync[F].pure)
 
-  def empty: User =
-    User("",Password(""), UserId.random)
+  def fromUrlForm[F[_]: Sync](form: UrlForm): F[User] =
+    for {
+      name <- getValueOrRaiseError[F](form, "name")
+      password <- confirmPasswordFromForm[F](form)
+    } yield User(name, Password.encrypt(password), UserId.random)
 
   def find[F[_]: Sync](id: UserId)(implicit XA: Transactor[F]): F[User] =
-    sql"""select * from $app_name;format="snake"$_user where id = \${id.toString}"""
-      .query[User].unique.transact(XA)
+    sql"""select * from test_crap_user where id = ${id.toString}"""
+      .query[User]
+      .unique
+      .transact(XA)
 
   def find[F[_]: Sync](name: String)(implicit XA: Transactor[F]): F[User] =
-    sql"""select * from $app_name;format="snake"$_user where name = \${name}"""
-      .query[User].unique.transact(XA)
+    sql"""select * from test_crap_user where name = ${name}"""
+      .query[User]
+      .unique
+      .transact(XA)
 
   def create[F[_]: Sync](user: User)(implicit XA: Transactor[F]): F[User] = {
     sql"""
-    insert into $app_name;format="snake"$_user (name, password, id)
+    insert into test_crap_user (name, password, id)
     values
     (
-      \${user.name},
-      \${user.password},
-      \${user.id}
+      ${user.name},
+      ${user.password},
+      ${user.id}
     )
-    """
-    .update.withUniqueGeneratedKeys[User]("name", "password", "id").transact(XA)
+    """.update.withUniqueGeneratedKeys[User]("name", "password", "id").transact(XA)
   }
 
   def update[F[_]: Sync](user: User): Update0 =
     sql"""
-      update $app_name;format="snake"$_user set
-        name = \${user.name},
-        password = \${user.password}
-      where id = \${user.id}
-      """
-      .update
+      update test_crap_user set
+        name = ${user.name},
+        password = ${user.password}
+      where id = ${user.id}
+      """.update
 
   def destroy[F[_]: Sync](user: User): Update0 =
-    sql"""delete from $app_name;format="snake"$_user where id = \${user.id}"""
-    .update
+    sql"""delete from test_crap_user where id = ${user.id}""".update
 
   def add = views.html.user.signup()
   def addUrl = "/signup"

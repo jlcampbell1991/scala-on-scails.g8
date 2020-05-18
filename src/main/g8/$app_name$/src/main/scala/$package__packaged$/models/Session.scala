@@ -1,8 +1,9 @@
 package $package$
 
 import cats.effect.Sync
+import cats.implicits._
 import org.http4s._
-import org.http4s.{UrlForm, Headers, ResponseCookie}
+import org.http4s.{Headers, ResponseCookie, UrlForm}
 import doobie._
 import doobie.implicits._
 import com.github.t3hnar.bcrypt._
@@ -11,33 +12,30 @@ import java.time._
 
 case class Session(username: String, password: String) extends Model {
   def findUser[F[_]: Sync](implicit XA: Transactor[F]): F[Option[User]] =
-    sql"""select * from $app_name$_user where name = \${username}"""
-    .query[User].option.transact(XA)
+    sql"""select * from test_crap_user where name = ${username}"""
+      .query[User]
+      .option
+      .transact(XA)
 
-  def auth[F[_]: Sync](user: User): User =
-    if(password.isBcrypted(user.password)) user
-    else User.empty
+  def auth[F[_]: Sync](user: User): Option[User] =
+    if (password.isBcrypted(user.password)) Some(user)
+    else None
 }
-object Session {
-  def apply(form: UrlForm): Option[Session] = {
+object Session extends Model {
+  def fromUrlForm[F[_]: Sync](form: UrlForm): F[Session] =
     for {
-      name <- form.get("username")
-      password <- form.get("password")
+      name <- getValueOrRaiseError[F](form, "name")
+      password <- getValueOrRaiseError[F](form, "password")
     } yield Session(name, password)
-  }.headOption
 
-  val COOKIE_NAME = "$app_name$_cookie"
+  val COOKIE_NAME = "test-crap_cookie"
   private val key = PrivateKey(scala.io.Codec.toUTF8(scala.util.Random.alphanumeric.take(20).mkString("")))
   private val crypto = CryptoBits(key)
   def cookie(user: User): ResponseCookie =
-    ResponseCookie(
-      name = COOKIE_NAME,
-      content = crypto.signToken(user.id, Instant.now.getEpochSecond.toString))
+    ResponseCookie(name = COOKIE_NAME, content = crypto.signToken(user.id, Instant.now.getEpochSecond.toString))
 
   def requestCookie(user: User): RequestCookie =
-    RequestCookie(
-      name = COOKIE_NAME,
-      content = crypto.signToken(user.id, Instant.now.getEpochSecond.toString))
+    RequestCookie(name = COOKIE_NAME, content = crypto.signToken(user.id, Instant.now.getEpochSecond.toString))
 
   def isLoggedIn(requestHeaders: Headers): Option[UserId] =
     for {

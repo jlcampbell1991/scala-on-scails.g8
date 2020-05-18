@@ -26,9 +26,11 @@ trait Routes {
 }
 
 object Routes {
-  def routes[F[_]: Sync: Transactor](M: AuthMiddleware[F, Option[UserId]], AssetsRoutes: HttpRoutes[F]): HttpRoutes[F] = {
+  def routes[F[_]: Sync: Transactor](
+      M: AuthMiddleware[F, Option[UserId]],
+      AssetsRoutes: HttpRoutes[F]): HttpRoutes[F] = {
     AssetsRoutes <+>
-    UserRoutes.routes[F] <+>
-    SessionRoutes.routes[F]
+      UserRoutes.routes[F] <+>
+      SessionRoutes.routes[F]
   }
 }

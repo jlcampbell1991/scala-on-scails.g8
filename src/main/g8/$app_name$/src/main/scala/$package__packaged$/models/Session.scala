@@ -12,7 +12,7 @@ import java.time._
 
 case class Session(username: String, password: String) extends Model {
   def findUser[F[_]: Sync](implicit XA: Transactor[F]): F[Option[User]] =
-    sql"""select * from test_crap_user where name = ${username}"""
+    sql"""select * from test_crap_user where name = \${username}"""
       .query[User]
       .option
       .transact(XA)

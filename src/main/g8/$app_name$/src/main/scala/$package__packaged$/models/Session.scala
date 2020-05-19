@@ -12,7 +12,7 @@ import java.time._
 
 case class Session(username: String, password: String) extends Model {
   def findUser[F[_]: Sync](implicit XA: Transactor[F]): F[Option[User]] =
-    sql"""select * from test_crap_user where name = \${username}"""
+    sql"""select * from $app_name;format="snake"$_user where name = \${username}"""
       .query[User]
       .option
       .transact(XA)
@@ -28,7 +28,7 @@ object Session extends Model {
       password <- getValueOrRaiseError[F](form, "password")
     } yield Session(name, password)
 
-  val COOKIE_NAME = "test-crap_cookie"
+  val COOKIE_NAME = "$app_name;format="snake"$_cookie"
   private val key = PrivateKey(scala.io.Codec.toUTF8(scala.util.Random.alphanumeric.take(20).mkString("")))
   private val crypto = CryptoBits(key)
   def cookie(user: User): ResponseCookie =

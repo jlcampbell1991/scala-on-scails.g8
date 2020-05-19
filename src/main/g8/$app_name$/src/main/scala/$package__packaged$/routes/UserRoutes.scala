@@ -8,8 +8,10 @@ import org.http4s.twirl._
 import doobie._
 
 object UserRoutes extends Routes {
-  def routes[F[_]: Sync: Transactor]: HttpRoutes[F] = {
-    implicit val dsl = new Http4sDsl[F] {}
+  def routes[F[_]: Sync: Transactor: Http4sDsl]: HttpRoutes[F] =
+    publicRoutes <+> authedRoutes
+
+  private def publicRoutes[F[_]: Sync: Transactor](implicit dsl: Http4sDsl[F]): HttpRoutes[F] = {
     import dsl._
 
     HttpRoutes.of {
@@ -23,5 +25,10 @@ object UserRoutes extends Routes {
         } yield response
       }.handleErrorWith { case e: MalformedMessageBodyFailure => Redirect(User.addUrl) }
     }
+  }
+
+  private def authedRoutes[F[_]: Sync: Transactor](implicit dsl: Http4sDsl[F]): HttpRoutes[F] = {
+    import dsl._
+    authedService((userId: UserId) => HttpRoutes.empty)
   }
 }

@@ -14,13 +14,13 @@ object SessionRoutes extends Routes {
     HttpRoutes.of {
       case GET -> Root / "login" => Ok(Session.login)
       case params @ POST -> Root / "login" => {
-        for {
-          form <- params.as[UrlForm]
-          session <- Session.fromUrlForm(form)
-          user <- session.findUser
-          response <- user.fold(Redirect(Session.loginUrl))(_ => Ok(Session.login))
-        } yield response
-      }.handleErrorWith { case e: MalformedMessageBodyFailure => Redirect(Session.loginUrl) }
+          for {
+            form <- params.as[UrlForm]
+            session <- Session.fromUrlForm(form)
+            user <- session.findUser
+            response <- user.fold(BadRequest(Session.login))(_ => Ok(Session.login))
+          } yield response
+        }.handleErrorWith { case _: MalformedMessageBodyFailure => BadRequest(Session.login) }
       case GET -> Root / "logout" =>
         for {
           response <- Redirect(Session.loginUrl)
@@ -30,6 +30,6 @@ object SessionRoutes extends Routes {
 
   def authedRoutes[F[_]: Sync: Transactor](implicit dsl: Http4sDsl[F]): HttpRoutes[F] = {
     import dsl._
-    authedService((userId: UserId) => HttpRoutes.empty)
+    authedService((_: UserId) => HttpRoutes.empty)
   }
 }

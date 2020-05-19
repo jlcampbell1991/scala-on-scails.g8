@@ -3,7 +3,6 @@ package $package$
 import doobie._
 import doobie.util.ExecutionContexts
 import cats.effect._
-import Config._
 
 object DBDriver {
   implicit val cs = IO.contextShift(ExecutionContexts.synchronous)

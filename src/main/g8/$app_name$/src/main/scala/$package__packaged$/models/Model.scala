@@ -1,7 +1,6 @@
 package $package$
 
 import cats.effect.Sync
-import cats.implicits._
 import doobie._
 import java.time.{LocalDate, Month}
 import java.util.UUID

@@ -14,18 +14,18 @@ object UserRoutes extends Routes {
     HttpRoutes.of {
       case GET -> Root / "signup" => Ok(User.add)
       case params @ POST -> Root / "signup" => {
-        for {
-          form <- params.as[UrlForm]
-          user <- User.fromUrlForm(form).flatMap(_.save)
-          cookie = Session.cookie(user)
-          response <- Ok(User.add).map(_.addCookie(cookie))
-        } yield response
-      }.handleErrorWith { case e: MalformedMessageBodyFailure => Redirect(User.addUrl) }
+          for {
+            form <- params.as[UrlForm]
+            user <- User.fromUrlForm(form).flatMap(_.save)
+            cookie = Session.cookie(user)
+            response <- Ok(User.add).map(_.addCookie(cookie))
+          } yield response
+        }.handleErrorWith { case _: MalformedMessageBodyFailure => Redirect(User.addUrl) }
     }
   }
 
   def authedRoutes[F[_]: Sync: Transactor](implicit dsl: Http4sDsl[F]): HttpRoutes[F] = {
     import dsl._
-    authedService((userId: UserId) => HttpRoutes.empty)
+    authedService((_: UserId) => HttpRoutes.empty)
   }
 }

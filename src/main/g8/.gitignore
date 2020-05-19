@@ -19,4 +19,4 @@ project/plugins/project/
 .idea/
 
 .DS_STORE
-/test-crap/src/main/resources/application.conf
+/$app_name$/src/main/resources/application.conf

@@ -7,23 +7,19 @@ import org.http4s._
 import org.http4s.server._
 import org.scalactic.TypeCheckedTripleEquals
 import org.scalatest._
+import org.scalatest.freespec.AnyFreeSpec
 import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
 
-abstract class BaseTest extends FreeSpec with Matchers with ScalaCheckPropertyChecks with TypeCheckedTripleEquals {
+abstract class BaseTest extends AnyFreeSpec with Matchers with ScalaCheckPropertyChecks with TypeCheckedTripleEquals {
   import DBDriver._
+  DB.initialize(DBDriver.XA).sequence.unsafeRunSync
 
-  val AssetsRoutes: HttpRoutes[IO] = HttpRoutes.empty
-
-  val M: AuthMiddleware[IO, Option[UserId]] = AuthMiddleware(
-    Kleisli((r: Request[IO]) => OptionT.liftF(Session.isLoggedIn(r.headers).pure[IO])))
-
-  val service: HttpRoutes[IO] = Routes.routes(M, AssetsRoutes)
+  val service: HttpRoutes[IO] = Routes.routes(HttpRoutes.empty)
 
   def check[A](actual: IO[Response[IO]], expectedStatus: org.http4s.Status, expectedBody: Option[A])(
-    implicit ev: EntityDecoder[IO, A]
-  ): Boolean = {
+      implicit ev: EntityDecoder[IO, A]
+  ): Assertion = {
     val actualResp = actual.unsafeRunSync
-    val statusCheck = actualResp.status == expectedStatus
     val bodyCheck = expectedBody match {
       case Some(_) =>
         expectedBody.fold[Boolean](actualResp.body.compile.toVector.unsafeRunSync.isEmpty)(expected =>
@@ -31,6 +27,6 @@ abstract class BaseTest extends FreeSpec with Matchers with ScalaCheckPropertyCh
         )
       case None => true
     }
-    statusCheck && bodyCheck
+    assert(actualResp.status == expectedStatus)
   }
 }

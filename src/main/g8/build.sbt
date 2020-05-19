@@ -25,8 +25,10 @@ lazy val `$app_name$` =
         "com.github.t3hnar"     %% "scala-bcrypt"             % scalaBcryptV,
         "org.reactormonk"       %% "cryptobits"               % "1.3",
         "com.typesafe"           % "config"                   % "1.4.0",
-        "org.scalacheck"        %% "scalacheck"               % "1.14.3" % Test,
-        "org.scalatest"         %% "scalatest"                % "3.0.8" % Test
+        "org.scalacheck"        %% "scalacheck"               % "1.14.3"  % Test,
+        "org.scalactic"         %% "scalactic"                % "3.1.2",
+        "org.scalatest"         %% "scalatest"                % "3.1.1"   % Test,
+        "org.scalatestplus"     %% "scalacheck-1-14"          % "3.1.1.1" % Test,
       ),
       Compile / console / scalacOptions ~= ((options: Seq[String]) =>
         options.filterNot(s => s.startsWith("-Ywarn") || s.startsWith("-Xlint")))

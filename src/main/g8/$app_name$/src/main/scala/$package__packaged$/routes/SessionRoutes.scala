@@ -8,14 +8,11 @@ import org.http4s.twirl._
 import doobie._
 
 object SessionRoutes extends Routes {
-  def routes[F[_]: Sync: Transactor: Http4sDsl]: HttpRoutes[F] =
-    publicRoutes <+> authedRoutes
-
-  private def publicRoutes[F[_]: Sync: Transactor](implicit dsl: Http4sDsl[F]): HttpRoutes[F] = {
+  def publicRoutes[F[_]: Sync: Transactor](implicit dsl: Http4sDsl[F]): HttpRoutes[F] = {
     import dsl._
 
     HttpRoutes.of {
-      case GET -> Root / "login" => Ok(Session.login.pure[F])
+      case GET -> Root / "login" => Ok(Session.login)
       case params @ POST -> Root / "login" => {
         for {
           form <- params.as[UrlForm]
@@ -31,7 +28,7 @@ object SessionRoutes extends Routes {
     }
   }
 
-  private def authedRoutes[F[_]: Sync: Transactor](implicit dsl: Http4sDsl[F]): HttpRoutes[F] = {
+  def authedRoutes[F[_]: Sync: Transactor](implicit dsl: Http4sDsl[F]): HttpRoutes[F] = {
     import dsl._
     authedService((userId: UserId) => HttpRoutes.empty)
   }

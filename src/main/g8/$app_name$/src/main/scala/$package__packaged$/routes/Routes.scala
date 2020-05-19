@@ -11,8 +11,6 @@ import org.http4s.Uri._
 import doobie._
 
 trait Routes {
-  def routes[F[_]: Sync: Transactor: Http4sDsl]: HttpRoutes[F]
-
   def Redirect[F[_]: Sync](uri: String)(implicit dsl: Http4sDsl[F]) = {
     import dsl._
     SeeOther(Location(Uri(authority = Some(Authority(host = RegName(uri))))))
@@ -28,11 +26,19 @@ trait Routes {
 }
 
 object Routes {
+  private def PublicRoutes[F[_]: Sync: Transactor: Http4sDsl]: HttpRoutes[F] =
+    UserRoutes.publicRoutes[F] <+>
+      SessionRoutes.publicRoutes[F]
+
+  private def AuthedRoutes[F[_]: Sync: Transactor: Http4sDsl]: HttpRoutes[F] =
+    UserRoutes.authedRoutes[F] <+>
+      SessionRoutes.authedRoutes[F]
+
   def routes[F[_]: Sync: Transactor](AssetsRoutes: HttpRoutes[F]): HttpRoutes[F] = {
     implicit val dsl = new Http4sDsl[F] {}
 
     AssetsRoutes <+>
-      UserRoutes.routes[F] <+>
-      SessionRoutes.routes[F]
+      PublicRoutes[F] <+>
+      AuthedRoutes[F]
   }
 }

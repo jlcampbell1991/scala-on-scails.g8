@@ -17,7 +17,7 @@ trait Model {
 
 case class Date(get: LocalDate)
 
-object Date extends doobie.util.meta.LegacyLocalDateMetaInstance {
+object Date {
   def apply(month: Int, day: Int, year: Int) = LocalDate.of(year, Month.of(month), day)
   def now: Date = Date(LocalDate.now)
   implicit val get: Get[Date] = Get[LocalDate].map(Date(_))

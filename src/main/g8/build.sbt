@@ -15,7 +15,7 @@ lazy val `$app_name$` =
         "io.circe"              %% "circe-parser"             % circeV,
         "org.tpolecat"          %% "doobie-core"              % doobieV,
         "org.tpolecat"          %% "doobie-postgres"          % doobieV,
-        "net.logstash.logback"  %  "logstash-logback-encoder" % "5.3",
+        "net.logstash.logback"  %  "logstash-logback-encoder" % "6.3",
         "ch.qos.logback"        %  "logback-classic"          % "1.2.3",
         "org.http4s"            %% "http4s-blaze-client"      % http4sV,
         "org.http4s"            %% "http4s-blaze-server"      % http4sV,
@@ -27,7 +27,7 @@ lazy val `$app_name$` =
         "com.typesafe"           % "config"                   % "1.4.0",
         "org.scalacheck"        %% "scalacheck"               % "1.14.3"  % Test,
         "org.scalactic"         %% "scalactic"                % "3.1.2",
-        "org.scalatest"         %% "scalatest"                % "3.1.1"   % Test,
+        "org.scalatest"         %% "scalatest"                % "3.1.2"   % Test,
         "org.scalatestplus"     %% "scalacheck-1-14"          % "3.1.1.1" % Test,
       ),
       Compile / console / scalacOptions ~= ((options: Seq[String]) =>

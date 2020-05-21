@@ -52,20 +52,20 @@ object User extends Model {
     } yield User(name, Password.encrypt(password), UserId.random)
 
   def find[F[_]: Sync](id: UserId)(implicit XA: Transactor[F]): F[User] =
-    sql"""select * from $app_name;format="snake"$_user where id = \${id.toString}"""
+    sql"""select * from $snake_case$_user where id = \${id.toString}"""
       .query[User]
       .unique
       .transact(XA)
 
   def find[F[_]: Sync](name: String)(implicit XA: Transactor[F]): F[User] =
-    sql"""select * from $app_name;format="snake"$_user where name = \${name}"""
+    sql"""select * from $snake_case$_user where name = \${name}"""
       .query[User]
       .unique
       .transact(XA)
 
   def create[F[_]: Sync](user: User)(implicit XA: Transactor[F]): F[User] = {
     sql"""
-    insert into $app_name;format="snake"$_user (name, password, id)
+    insert into $snake_case$_user (name, password, id)
     values
     (
       \${user.name},
@@ -77,14 +77,14 @@ object User extends Model {
 
   def update[F[_]: Sync](user: User): Update0 =
     sql"""
-      update $app_name;format="snake"$_user set
+      update $snake_case$_user set
         name = \${user.name},
         password = \${user.password}
       where id = \{user.id}
       """.update
 
   def destroy[F[_]: Sync](user: User): Update0 =
-    sql"""delete from $app_name;format="snake"$_user where id = \${user.id}""".update
+    sql"""delete from $snake_case$_user where id = \${user.id}""".update
 
   def add = views.html.user.signup()
   def addUrl = "/signup"

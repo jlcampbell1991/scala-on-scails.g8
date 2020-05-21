@@ -12,12 +12,12 @@ trait Model {
   implicit val uuidPut: Put[UUID] = Put[String].contramap(_.toString)
 
   protected def getValueOrRaiseError[F[_]: Sync](form: UrlForm, value: String): F[String] =
-    form.getFirst(value).fold(Sync[F].raiseError[String](MalformedMessageBodyFailure(s"forgot $value")))(Sync[F].pure)
+    form.getFirst(value).fold(Sync[F].raiseError[String](MalformedMessageBodyFailure(s"forgot \$value")))(Sync[F].pure)
 }
 
 case class Date(get: LocalDate)
 
-object Date {
+object Date extends doobie.util.meta.LegacyLocalDateMetaInstance {
   def apply(month: Int, day: Int, year: Int) = LocalDate.of(year, Month.of(month), day)
   def now: Date = Date(LocalDate.now)
   implicit val get: Get[Date] = Get[LocalDate].map(Date(_))

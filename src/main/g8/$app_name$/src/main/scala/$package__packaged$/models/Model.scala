@@ -11,9 +11,8 @@ trait Model {
   implicit val uuidGet: Get[UUID] = Get[String].map(UUID.fromString(_))
   implicit val uuidPut: Put[UUID] = Put[String].contramap(_.toString)
 
-  // TODO: Make this return F[A]
-  protected def getValueOrRaiseError[F[_]: Sync](form: UrlForm, value: String): F[String] =
-    form.getFirst(value).fold(Sync[F].raiseError[String](MalformedMessageBodyFailure(s"forgot \$value")))(Sync[F].pure)
+  protected def getValueOrRaiseError[F[_]: Sync, A](form: UrlForm, value: String): F[A] =
+    form.getFirst(value).fold(Sync[F].raiseError[A](MalformedMessageBodyFailure(s"forgot \$value")))(Sync[F].pure)
 }
 
 case class Date(get: LocalDate)

@@ -34,6 +34,14 @@ lazy val `$app_name$` =
         options.filterNot(s => s.startsWith("-Ywarn") || s.startsWith("-Xlint")))
     )
 
+lazy val `scaffold-scripts` =
+  project
+    .in(file("scaffold-scripts"))
+    .settings(
+      Compile / console / scalacOptions ~= ((options: Seq[String]) =>
+        options.filterNot(s => s.startsWith("-Ywarn") || s.startsWith("-Xlint")))
+    )
+
 lazy val root = project
   .in(file("."))
   .settings(

@@ -14,7 +14,7 @@ trait Model {
   protected def getValueOrRaiseError[F[_]: Sync](form: UrlForm, value: String): F[String] =
     form
       .getFirst(value)
-      .fold(Sync[F].raiseError[String](MalformedMessageBodyFailure(s"forgot $value")))(Sync[F].pure(_))
+      .fold(Sync[F].raiseError[String](MalformedMessageBodyFailure(s"forgot \$value")))(Sync[F].pure(_))
 }
 
 case class Date(get: LocalDate)

@@ -28,7 +28,7 @@ lazy val `$app_name$` =
         "org.scalacheck"        %% "scalacheck"               % "1.14.3"  % Test,
         "org.scalactic"         %% "scalactic"                % "3.1.2",
         "org.scalatest"         %% "scalatest"                % "3.1.2"   % Test,
-        "org.scalatestplus"     %% "scalacheck-1-14"          % "3.1.1.1" % Test,
+        "org.scalatestplus"     %% "scalacheck-1-14"          % "3.1.1"   % Test
       ),
       Compile / console / scalacOptions ~= ((options: Seq[String]) =>
         options.filterNot(s => s.startsWith("-Ywarn") || s.startsWith("-Xlint")))

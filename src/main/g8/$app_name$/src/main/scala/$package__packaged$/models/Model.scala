@@ -17,11 +17,11 @@ trait Model {
       .fold(Sync[F].raiseError[String](MalformedMessageBodyFailure(s"forgot \$value")))(Sync[F].pure(_))
 }
 
-case class Date(get: LocalDate)
+case class Date(value: LocalDate)
 
 object Date extends doobie.util.meta.LegacyLocalDateMetaInstance {
   def apply(month: Int, day: Int, year: Int) = LocalDate.of(year, Month.of(month), day)
   def now: Date = Date(LocalDate.now)
   implicit val get: Get[Date] = Get[LocalDate].map(Date(_))
-  implicit val put: Put[Date] = Put[LocalDate].contramap(_.get)
+  implicit val put: Put[Date] = Put[LocalDate].contramap(_.value)
 }

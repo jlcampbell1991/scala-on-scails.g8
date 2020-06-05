@@ -18,7 +18,10 @@ object SessionRoutes extends Routes {
             form <- params.as[UrlForm]
             session <- Session.fromUrlForm(form)
             user <- session.findUser
-            response <- user.fold(BadRequest(Session.login))(_ => Ok(Session.login))
+            response <- user.fold(BadRequest(Session.login)) { u =>
+              val cookie = Session.cookie(u)
+              Redirect(Item.indexUrl).map(_.addCookie(cookie))
+            }
           } yield response
         }.handleErrorWith { case _: MalformedMessageBodyFailure => BadRequest(Session.login) }
       case GET -> Root / "logout" =>

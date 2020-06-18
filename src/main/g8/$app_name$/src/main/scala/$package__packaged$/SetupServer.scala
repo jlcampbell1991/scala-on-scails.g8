@@ -11,10 +11,12 @@ import scala.concurrent.ExecutionContext.global
 
 object SetupServer {
   def stream[F[_]: ConcurrentEffect](implicit T: Timer[F], C: ContextShift[F], Xa: Transactor[F]): Stream[F, Nothing] = {
-    val assetsRoutes = resourceService[F](ResourceService.Config[F]("", Blocker.liftExecutionContext(global)))
+    val assetsRoutes = resourceService[F](ResourceService.Config[F]("/assets", Blocker.liftExecutionContext(global)))
     val finalHttpApp = Logger.httpApp(true, true)(Routes.routes[F](assetsRoutes).orNotFound)
     for {
       exitCode <- BlazeServerBuilder[F]
+        // Production PORT
+        //.bindHttp(System.getenv("PORT").toInt, "0.0.0.0")
         .bindHttp(8080, "0.0.0.0")
         .withHttpApp(finalHttpApp)
         .serve

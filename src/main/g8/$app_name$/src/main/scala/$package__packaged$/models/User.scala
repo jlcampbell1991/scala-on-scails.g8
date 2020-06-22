@@ -37,7 +37,7 @@ final case class User(name: String, unencPass: Password, userId: UserId) {
   def destroy[F[_]: Sync: Transactor] =
     User.destroy[F](this)
 }
-object User extends Model {
+object User extends Queries {
   private def confirmPasswordFromForm[F[_]: Sync](form: UrlForm): F[String] =
     form
       .getFirst("passwordConfirmation")

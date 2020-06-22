@@ -10,7 +10,7 @@ import com.github.t3hnar.bcrypt._
 import org.reactormonk.{CryptoBits, PrivateKey}
 import java.time._
 
-case class Session(username: String, password: String) extends Model {
+case class Session(username: String, password: String) extends Queries {
   def findUser[F[_]: Sync](implicit XA: Transactor[F]): F[Option[User]] =
     sql"""select * from $snake_case$_user where name = \${username}"""
       .query[User]

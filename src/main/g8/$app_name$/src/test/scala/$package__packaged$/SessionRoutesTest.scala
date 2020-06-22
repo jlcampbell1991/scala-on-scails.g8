@@ -30,7 +30,7 @@ final class SessionRoutesTest extends BaseTest {
             sessionForm
           )
         ),
-      Status.Ok,
+      Status.SeeOther,
       None
     )
   }

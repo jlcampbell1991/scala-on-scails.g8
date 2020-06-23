@@ -25,11 +25,9 @@ object Password {
 final case class User(name: String, unencPass: Password, userId: UserId) {
   def id: String = userId.toString
   def password: String = unencPass.get
-  def isEmpty: Boolean = name == "" && password == ""
 
   def save[F[_]: Sync: Transactor] =
-    if (this.isEmpty) this.pure[F]
-    else User.create[F](this)
+    User.create[F](this)
 
   def update[F[_]: Sync: Transactor] =
     User.update[F](this)

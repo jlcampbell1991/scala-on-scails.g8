@@ -8,6 +8,7 @@ lazy val `$app_name$` =
   project
     .in(file("$app_name$"))
     .enablePlugins(SbtTwirl)
+    .enablePlugins(JavaAppPackaging)
     .settings(
       name := "$app_name$",
       libraryDependencies ++= Seq(

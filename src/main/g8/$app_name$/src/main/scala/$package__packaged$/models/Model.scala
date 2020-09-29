@@ -9,10 +9,10 @@ import org.http4s._
 import org.http4s.UrlForm
 
 trait Model {
-  protected def getValueOrRaiseError[F[_]: Sync](form: UrlForm, value: String): F[String] =
+  protected def getValueOrRaiseError[F[_]: Sync](form: UrlForm, key: String): F[String] =
     form
-      .getFirst(value)
-      .fold(Sync[F].raiseError[String](MalformedMessageBodyFailure(s"forgot \$value")))(Sync[F].pure(_))
+      .getFirst(key)
+      .fold(Sync[F].raiseError[String](MalformedMessageBodyFailure(s"forgot \$key")))(Sync[F].pure(_))
 
   protected def getBooleanOrRaiseError[F[_]: Sync](form: UrlForm, key: String): F[Boolean] =
     getValueOrRaiseError(form, key).map { value =>

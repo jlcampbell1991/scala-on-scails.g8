@@ -1,5 +1,6 @@
 package $package$
 
+import cats.implicits._
 import cats.effect.Sync
 import doobie._
 import java.time.{LocalDateTime, Month}
@@ -12,6 +13,14 @@ trait Model {
     form
       .getFirst(value)
       .fold(Sync[F].raiseError[String](MalformedMessageBodyFailure(s"forgot \$value")))(Sync[F].pure(_))
+
+  protected def getBooleanOrRaiseError[F[_]: Sync](form: UrlForm, key: String): F[Boolean] =
+    getValueOrRaiseError(form, key).map { value =>
+      value match {
+        case "on" => true
+        case "off" => false
+      }
+    }
 }
 
 trait Queries {

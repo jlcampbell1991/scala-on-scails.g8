@@ -15,12 +15,12 @@ trait Model {
       .fold(Sync[F].raiseError[String](MalformedMessageBodyFailure(s"forgot \$key")))(Sync[F].pure(_))
 
   protected def getBooleanOrRaiseError[F[_]: Sync](form: UrlForm, key: String): F[Boolean] =
-    getValueOrRaiseError(form, key).map { value =>
-      value match {
-        case "on" => true
-        case "off" => false
+    Sync[F].pure(
+      form.getFirst(key) match {
+        case Some("on") => true
+        case _ => false
       }
-    }
+    )
 }
 
 trait Queries {

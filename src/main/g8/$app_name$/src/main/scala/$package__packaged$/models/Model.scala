@@ -4,6 +4,7 @@ import cats.implicits._
 import cats.effect.Sync
 import doobie._
 import java.time.{LocalDateTime, Month}
+import java.time.format.DateTimeFormatter
 import java.util.UUID
 import org.http4s._
 import org.http4s.UrlForm
@@ -37,7 +38,10 @@ trait Views {
   protected def getUrlOrDefault[A](id: Option[A], s: A => String) =
     id.map(s).getOrElse(default)
 }
-case class Date(value: LocalDateTime)
+case class Date(value: LocalDateTime) {
+  def getFormValue: String =
+    value.format(DateTimeFormatter.ISO_LOCAL_DATE)
+}
 
 object Date extends doobie.util.meta.TimeMetaInstances with doobie.util.meta.MetaConstructors {
   def apply(month: Int, day: Int, year: Int) =

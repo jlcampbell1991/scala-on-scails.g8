@@ -38,14 +38,24 @@ trait Views {
   protected def getUrlOrDefault[A](id: Option[A], s: A => String) =
     id.map(s).getOrElse(default)
 }
+
 case class Date(value: LocalDateTime) {
   def getFormValue: String =
-    value.format(DateTimeFormatter.ISO_LOCAL_DATE)
+    value.format(Date.formatter)
 }
 
 object Date extends doobie.util.meta.TimeMetaInstances with doobie.util.meta.MetaConstructors {
   def apply(month: Int, day: Int, year: Int) =
     LocalDateTime.of(year, Month.of(month), day, now.value.getHour, now.value.getMinute)
+
+  val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+
+  def fromForm(value: String): Option[Date] =
+    Try {
+      Date(
+        LocalDate.parse(value, formatter).atStartOfDay
+      )
+    }.toOption
 
   def now: Date = Date(LocalDateTime.now)
 

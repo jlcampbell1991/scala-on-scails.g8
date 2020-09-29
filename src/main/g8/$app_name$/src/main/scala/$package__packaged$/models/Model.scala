@@ -21,6 +21,9 @@ trait Model {
         case _ => false
       }
     )
+
+  protected def getOptionalValue[F[_]: Sync](form: UrlForm, key: String): F[Option[String]] =
+    Sync[F].pure(form.getFirst(key))
 }
 
 trait Queries {

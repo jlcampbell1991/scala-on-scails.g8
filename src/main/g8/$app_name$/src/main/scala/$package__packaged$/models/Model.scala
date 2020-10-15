@@ -3,11 +3,12 @@ package $package$
 import cats.implicits._
 import cats.effect.Sync
 import doobie._
-import java.time.{LocalDateTime, Month}
+import java.time.{LocalDate, LocalDateTime, Month}
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 import org.http4s._
 import org.http4s.UrlForm
+import scala.util.Try
 
 trait Model {
   protected def getValueOrRaiseError[F[_]: Sync](form: UrlForm, key: String): F[String] =

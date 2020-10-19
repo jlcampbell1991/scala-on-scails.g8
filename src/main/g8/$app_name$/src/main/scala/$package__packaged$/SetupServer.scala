@@ -16,8 +16,8 @@ object SetupServer {
     for {
       exitCode <- BlazeServerBuilder[F]
         // Production PORT
-        //.bindHttp(System.getenv("PORT").toInt, "0.0.0.0")
-        .bindHttp(8080, "0.0.0.0")
+        .bindHttp(System.getenv("PORT").toInt, "0.0.0.0")
+        // .bindHttp(8080, "0.0.0.0")
         .withHttpApp(finalHttpApp)
         .serve
     } yield exitCode

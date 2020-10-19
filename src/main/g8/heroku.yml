@@ -1,0 +1,3 @@
+build:
+  docker:
+    web: $app_name$/target/docker/stage/Dockerfile

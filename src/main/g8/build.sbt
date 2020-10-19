@@ -9,7 +9,12 @@ lazy val `$app_name$` =
     .in(file("$app_name$"))
     .enablePlugins(SbtTwirl)
     .enablePlugins(JavaAppPackaging)
+    .enablePlugins(DockerPlugin)
     .settings(
+      dockerExposedPorts ++= Seq(8080, 8081),
+      dockerEnvVars := Map(
+        "PORT" -> "8080"
+      ),
       name := "$app_name$",
       libraryDependencies ++= Seq(
         "io.circe"              %% "circe-generic"            % circeV,
